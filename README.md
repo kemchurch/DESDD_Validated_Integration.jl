@@ -4,7 +4,7 @@ DESDD_Validated_Integration.jl is a Julia package used to complete the computer-
 The package exports a single function called `main`, which returns 
 - `Φ` : An array of Chebyshev sequences corresponding to the initial condition (`Φ[1]`) and several of its derivatives, and the the solutions of four implicit step (`Φ[2]` to `Φ[5]`), rescaled to the domain [-1,1], with validation radius propagated forward by inclusion in the order zero term.
 - `Φ_function` : An array of functions, such that `Φ_function[n](t)`for n=1,...,4 returns the value of the hybrid enclosure of `Φ[n+1]` and several of its derivatives at argument `t::Interval{T} where T<:Real`.
-- `δ` : Vector of validated interval step sizes.
+- `δ` : Vector of (interval) validated step sizes.
 - `r_δ` : Vector of validation radii for the step sizes.
 - `r_C⁰` : Vector of C⁰ enclosures for the solution of the DE-SDD.
 
