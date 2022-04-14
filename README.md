@@ -1,5 +1,5 @@
 # DESDD_Validated_Integration.jl
-DE_SDD_Validated_Integration.jl is a Julia package used to complete the computer-assisted proofs in Section 5 of the paper Validated integration of differential equations with state-dependent delay. 
+DESDD_Validated_Integration.jl is a Julia package used to complete the computer-assisted proofs in Section 5 of the paper Validated integration of differential equations with state-dependent delay. 
 
 The package exports a single function called `main`, which returns 
 - `Φ` : An array of Chebyshev sequences corresponding to the initial condition (`Φ[1]`) and several of its derivatives, and the the solutions of four implicit step (`Φ[2]` to `Φ[5]`), rescaled to the domain [-1,1], with validation radius propagated forward by inclusion in the order zero term.
