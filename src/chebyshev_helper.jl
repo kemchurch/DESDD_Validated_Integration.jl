@@ -14,7 +14,7 @@ function cheb_nodes(N::Integer,Ni::T where T<:Real,ppi::T where T<:Real)
 end
 
 function cheb!(f::Any,N::Integer)
-    # Convert generic function f to its associated Chebyshev coefficients. Slow due to type Any. 
+    # Convert generic function f to its associated Chebyshev coefficients. Slow due to type Any. Not used by the proofs. Function name is not correct Julian style.
     ppi = @interval pi; Ni = @interval N;
     req_nodes = cheb_nodes(N,Ni,ppi);
     f₀ = f.(req_nodes);
@@ -33,7 +33,7 @@ function cheb!(f::Any,N::Integer)
 end
 
 function cheb_interp!(f,N::Integer)
-    # Convert a generic function f to a Chebyshev interpolant. Outputs as a RadiiPolynomial object. Slow.
+    # Convert a generic function f to a Chebyshev interpolant. Outputs as a RadiiPolynomial object. Slow. No longer used by the proofs.
     a = cheb!(f,N);
     cf = Sequence(Chebyshev(N),a);
     return cf
@@ -118,8 +118,8 @@ function convert_DiffEqSol(a,k,m,δ;start=0,T=Float64::Type)
     mi = @interval m;   ppi = @interval pi;
     s = (0:m)/mi;       Δ = 1/mi;           ki = @interval k;
     nodes = reverse(cheb_nodes(k+1,ki+1,ppi));
-    u_jℓ = zeros(T,k+2,m);           # Stored as BigFloat since we will refine it with newton.
-    s_jℓ = zeros(Interval{T},k+2,m); # Stored as Interval{BigFloat} since we want it rigorous from the start.
+    u_jℓ = zeros(T,k+2,m);           # Stored as prescribed type T.
+    s_jℓ = zeros(Interval{T},k+2,m); # Stored as Interval of type T.
     for j ∈ 1:m
         for ℓ ∈ 1:k+2
             s_jℓ[ℓ,j] = s[j] + Δ*(nodes[ℓ]+1)/2
