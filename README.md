@@ -8,7 +8,7 @@ The package exports a single function called `main`, which returns
 - `r_δ` : Vector of validation radii for the step sizes.
 - `r_C⁰` : Vector of C⁰ enclosures for the solution of the DE-SDD.
 
-Each file in the folder [data](https://github.com/kemchurch/DESDD_Validated_Integration.jl/tree/main/data) has a name formatted in the style `P_X_initialcondition_Y.jld2`. The symbol `X` references the parameter set, while `Y` references the initial condition (see Section 5.2 of the paper). These files contain variables that include numerically computed solutions of the relevant initial-value problems, as well as parameters required for the computer-assisted proofs.
+Each file in the folder [data](https://github.com/kemchurch/DESDD_Validated_Integration.jl/tree/main/data) has a name formatted in the style `P_X_initialcondition_Y.jld2`. The symbol `X` references the parameter set, while `Y` references the initial condition (see Section 5.2 of the paper). These files contain variables that represent numerically computed solutions of the relevant initial-value problems, as well as parameters required for the computer-assisted proofs.
 
 ## Installation
 The package requires Julia v1.6 or higher to be installed. Clone this repository, and activate/instantiate the package as follows:
