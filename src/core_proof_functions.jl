@@ -18,9 +18,8 @@ function 𝔉(u_jℓ,U_jℓ,δ,Φ,para, ppi::T where T<:Real; δ₋ = 1, check_e
     end
     for j ∈ 1:m
         for ℓ ∈ 1:deg+3
-            Fₚ_eval[ℓ] = 𝐅( (j-1)/mi + (1/mi)*(nodes[ℓ]+1)/2, component(U_jℓ,j)(nodes[ℓ])[0] ,δ ,Φ ,para ; δ₋, check_edges)[1]  # ! Time evaluations are actually t = (j/m)*node[ℓ] !
+            Fₚ_eval[ℓ] = 𝐅( (j-1)/mi + (1/mi)*(nodes[ℓ]+1)/2, component(U_jℓ,j)(nodes[ℓ])[0] ,δ ,Φ ,para ; δ₋, check_edges)[1] 
         end
-        #components_𝐅ₚ[1+(j-1)*(deg+3):j*(deg+3)] = coefficients(convert_matrix_to_interp(Fₚ_eval,ppi,nodes))
         if rigorous_error_control==1
             components_𝐅ₚ[1+(j-1)*(deg+3):j*(deg+3)] = cheb_interp(Interval.(mid.(Fₚ_eval)),deg+2,degi+2,ppi)
             Fₚ_eval_error[j] = Interval(-1,1)*norm(radius.(Fₚ_eval),Inf)
@@ -48,7 +47,7 @@ function 𝔉₈(u_jℓ,U_jℓ,δ,Φ,para, ppi::T where T<:Real, ind; δ₋=1, c
     for j ∈ 1:m
         u[:] = coefficients(component(U_jℓ,j));
         for ℓ ∈ 1:deg+3
-            Fₚ_eval[ℓ] = 𝐅₈( (j/mi)*(nodes[ℓ]+1)/2, u(nodes[ℓ])[0] ,δ ,Φ ,para,ind; δ₋, components_Φ)[1]  # ! Time evaluations are actually t = (j/m)*node[ℓ] !
+            Fₚ_eval[ℓ] = 𝐅₈( (j/mi)*(nodes[ℓ]+1)/2, u(nodes[ℓ])[0] ,δ ,Φ ,para,ind; δ₋, components_Φ)[1]  # 
         end
         components_𝐅ₚ[1+(j-1)*(deg+3):j*(deg+3)] = cheb_interp(Fₚ_eval,deg+2,degi+2,ppi)
     end
@@ -128,7 +127,7 @@ function 𝐃𝐅(t,u,δ,Φ,para,ind; δ₋=1,components_Φ=2)
     𝐃𝐅 = DF(t,u,δ,scale.*Φ(Φ_arg),para); # Compute and δ-scale
 end
 
-function 𝔇𝔉(u_jℓ,U_jℓ,δ,Φ,para, ppi::T where T<:Real; δ₋=1,components_Φ=2,rigorous_error_control=0)   # Interpolation of D𝐅ᵢ for i=1,...,bstrap (boostrap)
+function 𝔇𝔉(u_jℓ,U_jℓ,δ,Φ,para, ppi::T where T<:Real; δ₋=1,components_Φ=2,rigorous_error_control=0)  
     bstrap = 1;
     deg_Φ = length(component(Φ,1))-1;
     k = length(component(U_jℓ,1))-2;
@@ -150,7 +149,7 @@ function 𝔇𝔉(u_jℓ,U_jℓ,δ,Φ,para, ppi::T where T<:Real; δ₋=1,compon
     D₁Fₚ_eval = zeros(eltype(U_jℓ),deg+3); D₂Fₚ_eval = zeros(eltype(U_jℓ),deg+3);
     for j ∈ 1:m
         for ℓ₁ ∈ 1:deg+3 
-            @inbounds D₁Fₚ_eval[ℓ₁], D₂Fₚ_eval[ℓ₁] = 𝐃𝐅( (j-1)/mi + (1/mi)*(nodes[ℓ₁]+1)/2, component(U_jℓ,j)(nodes[ℓ₁])[0] ,δ ,Φ ,para,1; δ₋, components_Φ)  # ! Time evaluations are actually t = (j/m)*node[ℓ] !
+            @inbounds D₁Fₚ_eval[ℓ₁], D₂Fₚ_eval[ℓ₁] = 𝐃𝐅( (j-1)/mi + (1/mi)*(nodes[ℓ₁]+1)/2, component(U_jℓ,j)(nodes[ℓ₁])[0] ,δ ,Φ ,para,1; δ₋, components_Φ) 
         end
         if rigorous_error_control==1
             @inbounds components_D₁𝐅ₚ[1+(j-1)*(deg+3):j*(deg+3)] = cheb_interp(Interval.(mid.(D₁Fₚ_eval)),deg+2,degi+2,ppi)
@@ -401,9 +400,6 @@ end
 
 # Check lag inclusion of numerical solution
 function lag_range(u_tuple,δ,para,error;δ₋=1)
-    # Outputs:
-    # range_lag: vector of range of t↦tδ-α-c ̄u(t) in [-δ₋,0], theoretically re-scaled to [-1,1], for the segments of ̄u. Out-of-bounds range_lag is expected when working with numerical solutions.
-    # lag: interpolation of the functions defining the above ranges.
     lag = interpolate_lag(u_tuple,δ,para);
     u_jℓ,U_jℓ = u_tuple;    m = size(u_jℓ,2);
     ercheb = similar(lag(zero(eltype(U_jℓ))));  ercheb[:] .= para[4]*error;
@@ -642,7 +638,7 @@ function bound_Z∞(u_tuple,δ,Φ,para,ppi,r,r₀,r_∞; δ₋=1, sdiv=10)
     u_jℓ, U_jℓ = u_tuple;   k = size(u_jℓ,1)-2;    ki = Interval(k);
     Λ = 1 + (2\ppi)*log(ki+1);
     Cₖₚ_star_1 = (1+Λ)*(ppi/4)^bstrap*factorial(k+1-bstrap)/Interval(factorial(k+1));
-    Cₖₚ_star_2 = 1/(Interval(factorial(bstrap))^2^bstrap)   # Note: always have k≥p and p≤2.
+    Cₖₚ_star_2 = 1/(Interval(factorial(bstrap))^2^bstrap) 
     Cₖₚ = Interval(min(sup(Cₖₚ_star_1),sup(Cₖₚ_star_2)));
     m = size(u_jℓ,2);    mi = Interval(m);
     δ_rad = r*r₀*Interval(-1,1);    u_rad = r*(Λ+r_∞);
@@ -866,7 +862,6 @@ function proof_section_radpol_interp_monotonicity(G_n,A_n,DG_n,iu_n,iδ_n,Φ,Φ_
                             δ₋=δ_val_previous);n_derivatives=𝐤,δ₋=δ_val_previous)
     println(": Verifying monotonicity of time lag. :")
     check_lag_monotonicity(ipara,Φ_function,iu_n[2],s_jℓ_n,iδ_n + interval(-1,1)*δ_err,C0_err)
-    #check_lag_monotonicity(ipara,Φ_interp_high_accuracy,Φ_interp_low_accuracy,iδ_n + interval(-1,1)*δ_err)
     return C0_err, δ_err, Φ_interp_high_accuracy, Φ_interp_low_accuracy, Φ_function_next
 end
 
@@ -879,6 +874,5 @@ function proof_section_radpol_interp_monotonicity_nohybrid(G_n,A_n,DG_n,iu_n,iδ
     _,_,Φ_interp_low_accuracy = interpolate_solution_tight_D012(iu_n[2],iδ_n,s_jℓ_n,Φ_function,C0_err,δ_err,kΦ_low,interval(kΦ_low),𝐤,ipara,ppi;δ₋=δ_val_previous,sdiv=10,max_N=kΦ_low,check_large_coeffs=0)
     println(": Verifying monotonicity of time lag. :")
     check_lag_monotonicity(ipara,Φ_function,iu_n[2],s_jℓ_n,iδ_n + interval(-1,1)*δ_err,C0_err)
-    #check_lag_monotonicity(ipara,Φ_interp_high_accuracy,Φ_interp_low_accuracy,iδ_n + interval(-1,1)*δ_err)
     return C0_err, δ_err, Φ_interp_high_accuracy, Φ_interp_low_accuracy
 end
