@@ -115,6 +115,8 @@ function convert_matrix_to_interp(u,Cheb_matrix)
 end
 
 function convert_DiffEqSol(a,k,m,δ;start=0,T=Float64::Type)
+    # Convert solution structure from DifferentialEquations.jl to numerical data for the proofs. Not required to reproduce the proofs 
+    # since the data has been pre-processed.
     mi = @interval m;   ppi = @interval pi;
     s = (0:m)/mi;       Δ = 1/mi;           ki = @interval k;
     nodes = reverse(cheb_nodes(k+1,ki+1,ppi));
