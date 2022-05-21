@@ -494,13 +494,17 @@ end
 
 # Z0 bound
 function bound_Z0(A,DG,r₀;do_round=0)
+    n = size(A)[1]
+    wrap_A = LinearOperator(ParameterSpace()^n,ParameterSpace()^n,A)    # Wrap A and DG (later) as LinearOperators for fast multiplication.
     if do_round==0
-        defect = I[1:size(A,1),1:size(A,1)] - A*DG;
+        wrap_DG = LinearOperator(ParameterSpace()^n,ParameterSpace()^n,DG)
+        defect = I - wrap_A*wrap_DG;
     elseif do_round==1
         DG! = interval.(Float64.(inf.(DG),RoundDown),Float64.(sup.(DG),RoundUp));
-        defect = I[1:size(A,1),1:size(A,1)] - A*DG!
+        wrap_DG! = LinearOperator(ParameterSpace()^n,ParameterSpace()^n,DG!)
+        defect = I - wrap_A*wrap_DG!
     end
-    Z0 = prenorm_op(defect,r₀);
+    Z0 = prenorm_op(defect.coefficients,r₀);
     return Z0
 end
 
